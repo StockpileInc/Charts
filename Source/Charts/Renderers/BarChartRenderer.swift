@@ -471,6 +471,17 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
         else
         {
             if isDrawRoundedBarEnabled {
+                let cornerRadius = CGSize(width: barRect.width / 2.0, height: barRect.width / 2.0)
+                #if os(OSX)
+                let bezierPath = NSBezierPath(roundedRect: barRect, xRadius: cornerRadius.width, yRadius: cornerRadius.height)
+                context.addPath(bezierPath.cgPath)
+                #else
+                let bezierPath = UIBezierPath(roundedRect: barRect, byRoundingCorners: dataSet.barRoundingCorners, cornerRadii: cornerRadius)
+                context.addPath(bezierPath.cgPath)
+                #endif
+                // Set the color for the currently drawn value. If the index is out of bounds, reuse colors.
+                let fillColor = dataSet.color(atIndex: index).cgColor
+                context.setFillColor(fillColor)
                 context.fillPath()
             } else {
                 // Set the color for the currently drawn value. If the index is out of bounds, reuse colors.
